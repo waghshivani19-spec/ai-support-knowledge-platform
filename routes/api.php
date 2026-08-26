@@ -4,6 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KnowledgeBaseController;
 use App\Http\Controllers\Api\KnowledgeDocumentController;
+use App\Http\Controllers\AIServiceController;
+
+
+Route::get(
+    '/ai/test',
+    [AIServiceController::class, 'test']
+);
+
 
 Route::prefix('auth')->group(function () {
 

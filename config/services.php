@@ -35,4 +35,26 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Microservices
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for internal services owned by this platform, such as
+    | the Python/FastAPI AI microservice. These are not third party vendor
+    | credentials, but they still benefit from living alongside them so
+    | that all outbound service configuration is discoverable in one place.
+    |
+    */
+
+    'ai_service' => [
+        'url' => rtrim(env('AI_SERVICE_URL', 'http://127.0.0.1:8001'), '/'),
+        'timeout' => env('AI_SERVICE_TIMEOUT', 30),
+        'connect_timeout' => env('AI_SERVICE_CONNECT_TIMEOUT', 5),
+        'retry' => [
+            'times' => env('AI_SERVICE_RETRY_TIMES', 2),
+            'sleep_ms' => env('AI_SERVICE_RETRY_SLEEP_MS', 200),
+        ],
+    ],
+
 ];

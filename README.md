@@ -1,58 +1,206 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AI Support Knowledge Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based backend platform for managing company support knowledge, documents, users, and access permissions.
 
-## About Laravel
+The goal of this project is to provide a centralized knowledge system that can later be enhanced with AI-powered search and support assistance.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 What is this project?
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Companies often have a large amount of information spread across:
 
-## Learning Laravel
+- FAQs
+- Product documentation
+- Support guides
+- Troubleshooting documents
+- Internal knowledge articles
+- Customer support information
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Finding the right information manually can take a lot of time.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The **AI Support Knowledge Platform** provides a centralized place where companies can organize this information into knowledge bases and manage related documents.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+The platform is designed as a foundation for an AI-powered support system where users will eventually be able to ask questions and receive answers based on the company's knowledge.
 
-## Agentic Development
+### Example
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+A support employee receives the question:
 
-```bash
-composer require laravel/boost --dev
+> "How can a customer reset their password?"
 
-php artisan boost:install
-```
+Instead of manually searching through multiple documents, the future AI-powered functionality will be able to find the relevant information and provide the appropriate answer along with the source document.
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🚀 Current Features
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Authentication
 
-## Code of Conduct
+The platform currently provides:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- User registration
+- User login
+- Bearer token authentication
+- Get logged-in user
+- Logout
 
-## Security Vulnerabilities
+### Knowledge Base Management
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Authenticated users can manage knowledge bases:
 
-## License
+- Create knowledge base
+- View knowledge bases
+- Search knowledge bases
+- View a specific knowledge base
+- Update knowledge base
+- Delete knowledge base
+- Enable/disable knowledge bases
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Document Management
+
+Documents can be associated with a knowledge base.
+
+Currently supported document types include:
+
+- PDF
+- DOCX
+- TXT
+- CSV
+
+Available operations:
+
+- Upload document
+- List documents
+- View document
+- Delete document
+
+Maximum upload size: **20 MB**
+
+### Role-Based Access
+
+The project includes role-based access functionality for different types of users, such as:
+
+- Admin
+- Support Agent
+
+This allows the platform to control which users can access specific functionality.
+
+---
+
+## 🧠 AI/RAG Roadmap
+
+The current project provides the backend foundation for the AI functionality.
+
+The planned AI workflow is:
+
+```text
+Company Documents
+       ↓
+Document Processing
+       ↓
+Text Extraction
+       ↓
+Text Chunking
+       ↓
+AI Embeddings
+       ↓
+Vector Database
+       ↓
+Semantic Search
+       ↓
+Relevant Knowledge
+       ↓
+AI Response
+
+POST    api/auth/register
+POST    api/auth/login
+GET     api/auth/me
+POST    api/auth/logout
+
+GET     api/knowledge-bases
+POST    api/knowledge-bases
+GET     api/knowledge-bases/{knowledge_base}
+PUT     api/knowledge-bases/{knowledge_base}
+DELETE  api/knowledge-bases/{knowledge_base}
+
+GET     api/knowledge-bases/{knowledge_base}/documents
+POST    api/knowledge-bases/{knowledge_base}/documents
+GET     api/knowledge-bases/{knowledge_base}/documents/{document}
+DELETE  api/knowledge-bases/{knowledge_base}/documents/{document}
+
+
+PHASE 0
+Local environment
+        ↓
+PHASE 1
+Fix Laravel baseline
+        ↓
+PHASE 2
+Authentication testing
+        ↓
+PHASE 3
+Knowledge Base testing
+        ↓
+PHASE 4
+Document upload testing
+        ↓
+PHASE 5
+Python FastAPI service
+        ↓
+PHASE 6
+Laravel → Python communication
+        ↓
+PHASE 7
+PDF/DOCX/TXT/CSV extraction
+        ↓
+PHASE 8
+Chunking
+        ↓
+PHASE 9
+Store chunks in MySQL
+        ↓
+PHASE 10
+Embeddings
+        ↓
+PHASE 11
+Qdrant
+        ↓
+PHASE 12
+Semantic search
+        ↓
+PHASE 13
+RAG
+        ↓
+PHASE 14
+LLM
+        ↓
+PHASE 15
+Citations
+        ↓
+PHASE 16
+Conversation API
+        ↓
+PHASE 17
+AI Run tracking
+        ↓
+PHASE 18
+Support Tickets
+        ↓
+PHASE 19
+AI Ticket Suggestions
+        ↓
+PHASE 20
+Feedback
+        ↓
+PHASE 21
+Evaluation
+        ↓
+PHASE 22
+Frontend
+        ↓
+PHASE 23
+Docker
+        ↓
+PHASE 24
+Production deployment
