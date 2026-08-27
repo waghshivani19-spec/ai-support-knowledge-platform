@@ -1,4 +1,7 @@
 *.log
+
+data/vector_store/
+data/documents/
 .DS_Store
 .env
 .env.backup

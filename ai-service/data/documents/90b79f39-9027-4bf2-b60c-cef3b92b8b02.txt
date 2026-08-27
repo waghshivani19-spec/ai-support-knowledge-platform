@@ -1,0 +1,24 @@
+Company Password Reset Procedure
+
+Employees can reset their company password using the internal
+password portal.
+
+Step 1:
+Open the internal password portal.
+
+Step 2:
+Enter your employee ID.
+
+Step 3:
+Complete identity verification.
+
+Step 4:
+Enter your new password.
+
+Step 5:
+Confirm the new password.
+
+Step 6:
+Sign in again using the new password.
+
+If the password reset fails, contact the IT support team.
