@@ -12,6 +12,12 @@ Route::get(
     [AIServiceController::class, 'test']
 );
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/ai/chat', [AIServiceController::class, 'chat']);
+    Route::post('/ai/ask', [AIServiceController::class, 'ask']);
+    Route::get('/ai/knowledge-bases', [AIServiceController::class, 'knowledgeBases']);
+});
+
 
 Route::prefix('auth')->group(function () {
 

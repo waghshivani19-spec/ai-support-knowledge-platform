@@ -9,6 +9,7 @@ from app.api.knowledge import router as knowledge_router
 from app.api.chunking import router as chunking_router
 from app.api.embeddings import router as embeddings_router
 from app.api.vector import router as vector_router
+import logging
 
 app = FastAPI(
     title="AI Service",
@@ -16,6 +17,13 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 # Register API routes
 app.include_router(

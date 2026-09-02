@@ -29,3 +29,44 @@ class KnowledgeSearchRequest(BaseModel):
         ge=1,
         le=20,
     )
+
+
+class RAGRequest(BaseModel):
+
+    question: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+    )
+
+    top_k: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+    )
+
+
+class RAGSource(BaseModel):
+
+    document_id: str | None = None
+
+    filename: str | None = None
+
+    file_type: str | None = None
+
+    chunk_id: str | None = None
+
+    chunk_index: int | None = None
+
+    distance: float | None = None
+
+
+class RAGResponse(BaseModel):
+
+    success: bool
+
+    question: str
+
+    answer: str
+
+    sources: list[RAGSource]

@@ -1,8 +1,13 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 
 from app.core.config import settings
 from app.schemas.ai import AIChatRequest, AIChatResponse
-from app.services.ai_service import AIService
+from app.services.rag_service import RAGService
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(
@@ -18,20 +23,37 @@ router = APIRouter(
 def chat(request: AIChatRequest):
 
     try:
-        service = AIService()
 
-        response = service.generate_response(
-            request.message
+        logger.info(
+            "AI chat question: %s",
+            request.message,
+        )
+
+        rag_service = RAGService()
+
+        result = rag_service.ask(
+            question=request.message,
         )
 
         return AIChatResponse(
             success=True,
             message="AI response generated successfully",
-            response=response,
+            response=result["answer"],
             model=settings.OLLAMA_MODEL,
         )
 
+    except ValueError as exc:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )
+
     except Exception as exc:
+
+        logger.exception(
+            "AI chat request failed"
+        )
 
         raise HTTPException(
             status_code=500,

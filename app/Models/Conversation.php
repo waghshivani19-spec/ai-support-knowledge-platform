@@ -31,7 +31,9 @@ class Conversation extends Model
 
     public function knowledgeBase(): BelongsTo
     {
-        return $this->belongsTo(KnowledgeBase::class);
+        return $this->belongsTo(KnowledgeBase::class)->withDefault([
+            'name' => 'Default knowledge base',
+        ]);
     }
 
     public function user(): BelongsTo

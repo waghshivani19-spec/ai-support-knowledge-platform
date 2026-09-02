@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 100
 
 
+    RAG_TOP_K: int = 5
+    RAG_DISTANCE_THRESHOLD: float = 0.80
+    VECTOR_STORE_PATH: str = "data/vector_store"
+
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

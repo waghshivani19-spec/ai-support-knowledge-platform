@@ -3,13 +3,14 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 from app.schemas.knowledge import (
     DocumentUploadResponse,
     KnowledgeSearchRequest,
+    RAGRequest,
+    RAGResponse,
 )
 from app.services.chunking_service import ChunkingService
 from app.services.document_service import DocumentService
 from app.services.embedding_service import EmbeddingService
 from app.services.vector_service import VectorService
-
-
+from app.services.rag_service import RAGService
 
 
 router = APIRouter(
@@ -23,10 +24,13 @@ router = APIRouter(
     response_model=DocumentUploadResponse,
 )
 async def upload_document(
+    document_id: str,
     file: UploadFile = File(...),
 ):
     """
     Complete knowledge ingestion pipeline.
+
+    Laravel provides the document_id.
 
     Document
         ↓
@@ -37,11 +41,38 @@ async def upload_document(
     Embeddings
         ↓
     ChromaDB
+
+    The Laravel document_id is stored with
+    every chunk in ChromaDB metadata.
     """
 
     try:
 
+        # --------------------------------
+        # Validate document ID
+        # --------------------------------
+
+        document_id = document_id.strip()
+
+        if not document_id:
+            raise ValueError(
+                "document_id cannot be empty."
+            )
+
+        # --------------------------------
+        # Read uploaded file
+        # --------------------------------
+
         file_content = await file.read()
+
+        if not file_content:
+            raise ValueError(
+                "Uploaded file is empty."
+            )
+
+        # --------------------------------
+        # 1. Document processing
+        # --------------------------------
 
         document_service = (
             DocumentService()
@@ -51,18 +82,19 @@ async def upload_document(
             document_service.process_document(
                 filename=file.filename or "unknown",
                 file_content=file_content,
+                document_id=document_id,
             )
         )
 
         text = result["text"]
 
-        document_id = result[
-            "document_id"
-        ]
+        # IMPORTANT:
+        # Use the document_id provided by Laravel.
+        # Do NOT generate a new document ID here.
 
-        # -------------------------
-        # 1. Chunking
-        # -------------------------
+        # --------------------------------
+        # 2. Chunking
+        # --------------------------------
 
         chunking_service = (
             ChunkingService()
@@ -79,9 +111,9 @@ async def upload_document(
                 "No chunks were generated."
             )
 
-        # -------------------------
-        # 2. Embeddings
-        # -------------------------
+        # --------------------------------
+        # 3. Embeddings
+        # --------------------------------
 
         embedding_service = (
             EmbeddingService()
@@ -93,9 +125,9 @@ async def upload_document(
             )
         )
 
-        # -------------------------
-        # 3. Vector database
-        # -------------------------
+        # --------------------------------
+        # 4. Vector database
+        # --------------------------------
 
         vector_service = (
             VectorService()
@@ -126,6 +158,10 @@ async def upload_document(
             embeddings=embeddings,
             metadatas=metadatas,
         )
+
+        # --------------------------------
+        # 5. Response
+        # --------------------------------
 
         return DocumentUploadResponse(
             success=True,
@@ -158,6 +194,10 @@ async def upload_document(
             ),
         ) from exc
 
+
+# --------------------------------
+# Knowledge Search
+# --------------------------------
 
 @router.post("/search")
 def search_knowledge(
@@ -195,4 +235,50 @@ def search_knowledge(
         raise HTTPException(
             status_code=500,
             detail=str(exc),
+        )
+
+
+# --------------------------------
+# RAG endpoint
+# --------------------------------
+
+@router.post(
+    "/ask",
+    response_model=RAGResponse,
+)
+def ask_knowledge_base(
+    request: RAGRequest,
+):
+
+    try:
+
+        rag_service = RAGService()
+
+        result = rag_service.ask(
+            question=request.question,
+            top_k=request.top_k,
+        )
+
+        return {
+            "success": True,
+            "question": request.question,
+            "answer": result["answer"],
+            "sources": result["sources"],
+        }
+
+    except ValueError as exc:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )
+
+    except Exception as exc:
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "An error occurred while "
+                "processing the RAG request."
+            ),
         )

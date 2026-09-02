@@ -1,6 +1,5 @@
 from io import BytesIO
 from pathlib import Path
-from uuid import uuid4
 
 import fitz
 from docx import Document
@@ -11,6 +10,8 @@ from app.core.config import settings
 class DocumentService:
     """
     Handles document validation, storage and text extraction.
+
+    The document_id is provided by Laravel.
     """
 
     ALLOWED_EXTENSIONS = {
@@ -29,7 +30,10 @@ class DocumentService:
             exist_ok=True,
         )
 
-    def validate_extension(self, filename: str) -> str:
+    def validate_extension(
+        self,
+        filename: str,
+    ) -> str:
         """
         Validate the file extension and return it.
         """
@@ -39,12 +43,16 @@ class DocumentService:
         if extension not in self.ALLOWED_EXTENSIONS:
             raise ValueError(
                 f"Unsupported file type: {extension}. "
-                f"Allowed types: {', '.join(self.ALLOWED_EXTENSIONS)}"
+                f"Allowed types: "
+                f"{', '.join(self.ALLOWED_EXTENSIONS)}"
             )
 
         return extension
 
-    def validate_size(self, file_content: bytes) -> None:
+    def validate_size(
+        self,
+        file_content: bytes,
+    ) -> None:
         """
         Validate the uploaded file size.
         """
@@ -72,13 +80,19 @@ class DocumentService:
         """
 
         if extension == ".txt":
-            return self._extract_txt(file_content)
+            return self._extract_txt(
+                file_content
+            )
 
         if extension == ".pdf":
-            return self._extract_pdf(file_content)
+            return self._extract_pdf(
+                file_content
+            )
 
         if extension == ".docx":
-            return self._extract_docx(file_content)
+            return self._extract_docx(
+                file_content
+            )
 
         raise ValueError(
             f"Unsupported file type: {extension}"
@@ -134,6 +148,7 @@ class DocumentService:
         paragraphs = []
 
         for paragraph in document.paragraphs:
+
             text = paragraph.text.strip()
 
             if text:
@@ -143,18 +158,17 @@ class DocumentService:
 
     def save_file(
         self,
+        document_id: str,
         file_content: bytes,
         extension: str,
-    ) -> tuple[str, str]:
+    ) -> str:
         """
-        Save the original document using a generated ID.
+        Save the original document using the
+        document_id provided by Laravel.
 
         Returns:
-            document_id
             stored_filename
         """
-
-        document_id = str(uuid4())
 
         stored_filename = (
             f"{document_id}{extension}"
@@ -169,13 +183,11 @@ class DocumentService:
             file_content
         )
 
-        return (
-            document_id,
-            stored_filename,
-        )
+        return stored_filename
 
     def process_document(
         self,
+        document_id: str,
         filename: str,
         file_content: bytes,
     ) -> dict:
@@ -187,7 +199,16 @@ class DocumentService:
         3. Extract text
         4. Save original file
         5. Return metadata
+
+        The document_id is provided by Laravel.
         """
+
+        document_id = document_id.strip()
+
+        if not document_id:
+            raise ValueError(
+                "document_id cannot be empty."
+            )
 
         extension = self.validate_extension(
             filename
@@ -208,11 +229,10 @@ class DocumentService:
                 "in the document."
             )
 
-        document_id, stored_filename = (
-            self.save_file(
-                file_content,
-                extension,
-            )
+        stored_filename = self.save_file(
+            document_id=document_id,
+            file_content=file_content,
+            extension=extension,
         )
 
         return {
